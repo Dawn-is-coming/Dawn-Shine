@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dawn Shine · 黎明初露 — Minecraft 纯原版服务器</title>
+<meta name="description" content="Dawn Shine 黎明初露 · 纯原版 Minecraft 生存服务器，仅启用登录插件，公平与努力才是核心">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700;900&family=Inter:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  :root[data-theme="dark"]{
+    --bg:#0e0d12; --bg-elev:#16151c; --bg-glass:rgba(28,25,35,0.55); --bg-glass-strong:rgba(28,25,35,0.78);
+    --text:#ede8df; --text-soft:#a8a097; --text-mute:#6c6660;
+    --line:rgba(255,240,220,0.10); --line-soft:rgba(255,240,220,0.06);
+    --accent:#e8a87c; --accent-soft:#d97757; --accent-glow:rgba(232,168,124,0.35);
+    --good:#9bcf8f; --bad:#d4646a; --shadow:0 30px 80px -20px rgba(0,0,0,0.65);
+  }
+  :root[data-theme="light"]{
+    --bg:#f7f2ec; --bg-elev:#fbf7f1; --bg-glass:rgba(255,250,244,0.55); --bg-glass-strong:rgba(255,250,244,0.82);
+    --text:#1a1714; --text-soft:#5a534c; --text-mute:#948c83;
+    --line:rgba(40,28,18,0.12); --line-soft:rgba(40,28,18,0.06);
+    --accent:#c9612a; --accent-soft:#a14a1f; --accent-glow:rgba(201,97,42,0.22);
+    --good:#5a8a3a; --bad:#c0392b; --shadow:0 30px 80px -25px rgba(120,80,40,0.18);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+  body{background:var(--bg);color:var(--text);font-family:'Inter','Noto Serif SC',sans-serif;font-size:16px;line-height:1.7;overflow-x:hidden;transition:background 600ms cubic-bezier(.22,1,.36,1),color 600ms cubic-bezier(.22,1,.36,1)}
+  body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 20% 0%,var(--accent-glow),transparent 60%),radial-gradient(ellipse 60% 40% at 80% 100%,rgba(217,119,87,0.18),transparent 60%);pointer-events:none;z-index:0;opacity:.7;transition:opacity 600ms ease}
+  #bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+  .serif{font-family:'Noto Serif SC',serif}
+  .mono{font-family:'JetBrains Mono',monospace}
+  .eyebrow{font-family:'Inter',sans-serif;font-size:11px;font-weight:500;letter-spacing:.32em;text-transform:uppercase;color:var(--accent);display:inline-flex;align-items:center;gap:.75rem}
+  .eyebrow::before{content:'';width:24px;height:1px;background:var(--accent);opacity:.6}
+  h1,h2,h3,h4{font-family:'Noto Serif SC',serif;font-weight:700;line-height:1.15;letter-spacing:.02em}
+  .container{max-width:1280px;margin:0 auto;padding:0 2rem;position:relative;z-index:1}
+  section{padding:7rem 0;position:relative;z-index:1}
+  nav{position:fixed;top:0;left:0;right:0;z-index:100;backdrop-filter:blur(20px) saturate(1.4);-webkit-backdrop-filter:blur(20px) saturate(1.4);background:var(--bg-glass);border-bottom:1px solid var(--line-soft);transition:background 600ms ease,border-color 600ms ease}
+  .nav-inner{max-width:1280px;margin:0 auto;padding:1.1rem 2rem;display:flex;align-items:center;justify-content:space-between}
+  .logo{display:flex;align-items:center;gap:.75rem;text-decoration:none;color:var(--text)}
+  .logo-mark{width:28px;height:28px;position:relative;display:block}
+  .logo-mark::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--accent),var(--accent-soft));border-radius:50% 50% 50% 0;transform:rotate(-45deg)}
+  .logo-mark::after{content:'';position:absolute;inset:35%;background:var(--bg);border-radius:50%}
+  .logo-text{font-family:'Noto Serif SC',serif;font-weight:700;font-size:18px;letter-spacing:.05em}
+  .logo-text small{display:block;font-family:'Inter',sans-serif;font-size:9px;font-weight:500;letter-spacing:.3em;color:var(--text-mute);margin-top:2px}
+  .nav-links{display:flex;gap:2.5rem;align-items:center}
+  .nav-links a{color:var(--text-soft);text-decoration:none;font-size:13px;letter-spacing:.04em;transition:color 300ms ease;position:relative}
+  .nav-links a:hover{color:var(--text)}
+  .nav-links a::after{content:'';position:absolute;bottom:-6px;left:0;width:0;height:1px;background:var(--accent);transition:width 400ms cubic-bezier(.22,1,.36,1)}
+  .nav-links a:hover::after{width:100%}
+  .theme-toggle{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--bg-glass);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 300ms ease;overflow:hidden;position:relative}
+  .theme-toggle:hover{border-color:var(--accent);color:var(--accent)}
+  .theme-toggle svg{width:16px;height:16px}
+  [data-theme="dark"] .theme-toggle .sun{display:block}
+  [data-theme="dark"] .theme-toggle .moon{display:none}
+  [data-theme="light"] .theme-toggle .sun{display:none}
+  [data-theme="light"] .theme-toggle .moon{display:block}
+  @media (max-width:768px){.nav-links{display:none}}
+  /* ====== HERO 大重构 ====== */
+  .hero{
+    min-height:100vh;
+    padding:9rem 0 4rem;
+    display:flex;
+    align-items:stretch;
+    position:relative;
+    overflow:hidden;
+  }
+  /* 破晓光带：从左下到右上的对角光 */
+  .hero::before{
+    content:'';
+    position:absolute;
+    left:-20%; bottom:-30%;
+    width:140%; height:80%;
+    background:linear-gradient(35deg, transparent 30%, var(--accent-glow) 45%, transparent 65%);
+    filter:blur(60px);
+    opacity:.5;
+    pointer-events:none;
+    z-index:0;
+    animation:dawnSweep 18s ease-in-out infinite;
+  }
+  @keyframes dawnSweep{
+    0%,100%{transform:translate(0,0) scale(1);opacity:.4}
+    50%{transform:translate(8%, -4%) scale(1.08);opacity:.6}
+  }
+  /* 网格装饰线 */
+  .hero::after{
+    content:'';
+    position:absolute;
+    inset:0;
+    background-image:
+      linear-gradient(var(--line-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+    background-size: 80px 80px;
+    background-position: -1px -1px;
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 30%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 30%, transparent 80%);
+    pointer-events:none;
+    z-index:0;
+    opacity:.5;
+  }
+  .hero-grid{
+    display:grid;
+    grid-template-columns:1.15fr 1fr;
+    gap:4rem;
+    align-items:center;
+    width:100%;
+    position:relative;
+    z-index:2;
+  }
+  @media (max-width:1024px){
+    .hero-grid{grid-template-columns:1fr;gap:3rem}
+  }
+  /* ====== 红框区域：在标题下方、副标题上方添加内容 ====== */
+  .hero-tagline{
+    font-family:'Noto Serif SC',serif;
+    font-weight:400;
+    font-size:clamp(1.2rem, 2.5vw, 1.6rem);
+    color:var(--text-soft);
+    line-height:1.5;
+    margin:1.5rem 0 1.25rem;
+    opacity:0;
+    transform:translateY(20px);
+  }
+  .hero-eyebrow{opacity:0;transform:translateY(-20px)}
+  .hero-title{
+    font-family:'Noto Serif SC',serif;
+    font-weight:900;
+    font-size:clamp(3.5rem, 11vw, 9rem);
+    line-height:.92;
+    letter-spacing:-0.01em;
+    margin:1.5rem 0 1.25rem;
+    opacity:0;
+    transform:translateY(40px);
+  }
+  .hero-title .en{
+    display:block;
+    font-family:'Inter',sans-serif;
+    font-weight:700;
+    font-size:clamp(1rem, 1.6vw, 1.3rem);
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:var(--text-mute);
+    margin-top:1.25rem;
+  }
+  .hero-title .accent{color:var(--accent);font-style:italic;font-weight:400}
+  .line-mask{overflow:hidden;display:block}
+  .line{transform:translateY(110%);display:block}
+  .hero-sub{
+    font-family:'Noto Serif SC',serif;
+    font-weight:400;
+    font-size:clamp(1rem,1.3vw,1.1rem);
+    color:var(--text-soft);
+    max-width:30rem;
+    line-height:1.85;
+    margin:1.75rem 0 2.25rem;
+    opacity:0;
+    transform:translateY(20px);
+  }
+  .hero-cta{display:flex;gap:1rem;flex-wrap:wrap;opacity:0;transform:translateY(16px)}
+  /* 实时数据条 —— hero 左侧底部三大数字 */
+  .hero-stats{
+    margin-top:3.5rem;
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:0;
+    border-top:1px solid var(--line);
+    padding-top:1.75rem;
+    opacity:0;
+    transform:translateY(20px);
+  }
+  .hero-stat{
+    padding-right:1.5rem;
+    border-right:1px solid var(--line-soft);
+  }
+  .hero-stat:last-child{border-right:none}
+  .hero-stat .hs-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    letter-spacing:.2em;
+    text-transform:uppercase;
+    color:var(--text-mute);
+    margin-bottom:.5rem;
+  }
+  .hero-stat .hs-value{
+    font-family:'JetBrains Mono',monospace;
+    font-size:clamp(1.5rem, 2.6vw, 2rem);
+    font-weight:500;
+    color:var(--text);
+    letter-spacing:-0.02em;
+    line-height:1;
+    display:flex;
+    align-items:baseline;
+    gap:.3rem;
+  }
+  .hero-stat .hs-value .hs-unit{
+    font-size:.55em;
+    color:var(--text-mute);
+    font-weight:400;
+  }
+  .hero-stat .hs-value .hs-max{
+    font-size:.5em;
+    color:var(--text-mute);
+    font-weight:400;
+  }
+  .hero-stat.is-accent .hs-value{color:var(--accent)}
+  .btn{display:inline-flex;align-items:center;gap:.6rem;padding:.95rem 1.6rem;border-radius:14px;text-decoration:none;font-size:14px;font-weight:500;letter-spacing:.02em;transition:all 350ms cubic-bezier(.22,1,.36,1);cursor:pointer;border:none;font-family:'Inter',sans-serif}
+  .btn-primary{background:var(--accent);color:#fff;box-shadow:0 12px 30px -8px var(--accent-glow)}
+  .btn-primary:hover{background:var(--accent-soft);transform:translateY(-2px);box-shadow:0 18px 40px -10px var(--accent-glow)}
+  .btn-ghost{background:var(--bg-glass);color:var(--text);border:1px solid var(--line);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+  .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+  /* 滚动提示 */
+  .scroll-hint{
+    position:absolute;
+    bottom:1.5rem;
+    left:50%;
+    transform:translateX(-50%);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:.5rem;
+    color:var(--text-mute);
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    letter-spacing:.25em;
+    text-transform:uppercase;
+    opacity:0;
+    animation:fadeInScroll 1s ease 1.6s forwards;
+    z-index:3;
+  }
+  .scroll-hint .sh-line{
+    width:1px;
+    height:32px;
+    background:linear-gradient(to bottom, var(--accent), transparent);
+    animation:scrollLine 2s ease-in-out infinite;
+  }
+  @keyframes fadeInScroll{to{opacity:.7}}
+  @keyframes scrollLine{
+    0%{transform:scaleY(0);transform-origin:top}
+    50%{transform:scaleY(1);transform-origin:top}
+    51%{transform-origin:bottom}
+    100%{transform:scaleY(0);transform-origin:bottom}
+  }
+  @media (max-width:768px){.scroll-hint{display:none}}
+  .status-card{backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);background:var(--bg-glass-strong);border:1px solid var(--line);border-radius:24px;padding:2rem;box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .status-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.4}
+  .status-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+  .status-head h3{font-size:14px;font-weight:500;font-family:'Inter',sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--text-soft)}
+  .status-pill{display:inline-flex;align-items:center;gap:.5rem;padding:.35rem .85rem;border-radius:100px;font-size:11px;font-weight:500;letter-spacing:.08em;font-family:'JetBrains Mono',monospace}
+  .status-pill.online{background:rgba(155,207,143,0.12);color:var(--good);border:1px solid rgba(155,207,143,0.3)}
+  .status-pill.offline{background:rgba(220,100,100,0.12);color:var(--bad);border:1px solid rgba(220,100,100,0.3)}
+  .status-pill.loading{background:rgba(232,168,124,0.12);color:var(--accent);border:1px solid rgba(232,168,124,0.3)}
+  .status-dot{width:6px;height:6px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor;animation:pulse 2s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  .status-icon-row{display:flex;align-items:center;gap:1.25rem;padding-bottom:1.5rem;border-bottom:1px solid var(--line-soft);margin-bottom:1.5rem}
+  .server-icon{width:64px;height:64px;border-radius:12px;background:var(--bg-elev);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;image-rendering:pixelated}
+  .server-icon img{width:100%;height:100%;object-fit:cover;image-rendering:pixelated}
+  .server-icon-placeholder{font-family:'Noto Serif SC',serif;font-weight:900;font-size:24px;color:var(--accent)}
+  .status-motd{flex:1;min-width:0}
+  .status-motd .name{font-family:'Noto Serif SC',serif;font-weight:700;font-size:18px;margin-bottom:4px}
+  .status-motd .motd{font-size:12px;color:var(--text-mute);line-height:1.5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .stats-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;margin-bottom:1.5rem}
+  @media (max-width:480px){.stats-grid{grid-template-columns:1fr 1fr;}}
+  .stat-block{padding:1rem;background:rgba(255,255,255,0.02);border:1px solid var(--line-soft);border-radius:12px}
+  [data-theme="light"] .stat-block{background:rgba(0,0,0,0.02)}
+  .stat-block .label{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-mute);margin-bottom:.4rem}
+  .stat-block .value{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:500;color:var(--text);letter-spacing:-.02em}
+  .stat-block .value .max{font-size:14px;color:var(--text-mute);margin-left:4px}
+  .stat-block .value .unit{font-size:11px;color:var(--text-mute);margin-left:2px;font-weight:400}
+  .player-bar{height:4px;background:var(--line);border-radius:2px;overflow:hidden;margin-top:.6rem}
+  .player-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-soft));width:0;transition:width 800ms cubic-bezier(.22,1,.36,1);border-radius:2px}
+  .ip-block{background:var(--bg-elev);border:1px solid var(--line);border-radius:14px;padding:.85rem 1rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+  .ip-block .ip-label{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-mute);margin-bottom:2px}
+  .ip-block .ip-value{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;color:var(--text);word-break:break-all}
+  .copy-btn{flex-shrink:0;background:transparent;border:1px solid var(--line);color:var(--text-soft);width:36px;height:36px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 300ms ease}
+  .copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+  .copy-btn.copied{background:var(--good);border-color:var(--good);color:#fff}
+  .copy-btn svg{width:14px;height:14px}
+  .section-head{margin-bottom:4rem;max-width:720px}
+  .section-head .eyebrow{margin-bottom:1.5rem}
+  .section-head h2{font-size:clamp(2rem,4.5vw,3.5rem);font-weight:700;margin-bottom:1.25rem;line-height:1.1}
+  .section-head p{color:var(--text-soft);font-size:1.05rem;line-height:1.8;max-width:38rem}
+  .features-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem}
+  @media (max-width:768px){.features-grid{grid-template-columns:1fr}}
+  .feature-card{backdrop-filter:blur(20px) saturate(1.4);-webkit-backdrop-filter:blur(20px) saturate(1.4);background:var(--bg-glass);border:1px solid var(--line);border-radius:20px;padding:2.5rem 2rem;position:relative;transition:all 500ms cubic-bezier(.22,1,.36,1);overflow:hidden}
+  .feature-card::before,.feature-card::after{content:'';position:absolute;width:14px;height:14px;border-color:var(--accent);border-style:solid;border-width:0;opacity:0;transition:opacity 400ms ease}
+  .feature-card::before{top:12px;left:12px;border-top-width:1px;border-left-width:1px}
+  .feature-card::after{bottom:12px;right:12px;border-bottom-width:1px;border-right-width:1px}
+  .feature-card:hover{transform:translateY(-4px);border-color:rgba(232,168,124,0.4)}
+  .feature-card:hover::before,.feature-card:hover::after{opacity:1}
+  .feature-num{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);letter-spacing:.1em;margin-bottom:1.5rem}
+  .feature-card h3{font-size:1.5rem;font-weight:700;margin-bottom:1rem;letter-spacing:.03em}
+  .feature-card p{color:var(--text-soft);font-size:.95rem;line-height:1.75}
+  .feature-card .feature-tag{display:block;margin-top:1.5rem;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-mute);letter-spacing:.08em;padding-top:1.25rem;border-top:1px solid var(--line-soft)}
+  .feature-card code{font-family:'JetBrains Mono',monospace;font-size:.85em;color:var(--accent);background:rgba(232,168,124,0.08);padding:1px 6px;border-radius:4px}
+  .timeline-wrap{position:relative;padding-left:2rem}
+  .timeline-wrap::before{content:'';position:absolute;left:6px;top:8px;bottom:8px;width:1px;background:linear-gradient(180deg,var(--accent),transparent)}
+  .tl-item{position:relative;padding-bottom:2.5rem}
+  .tl-item::before{content:'';position:absolute;left:-2rem;top:6px;width:13px;height:13px;border-radius:50%;background:var(--bg);border:2px solid var(--accent);box-shadow:0 0 0 4px var(--bg)}
+  .tl-item .tl-date{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);letter-spacing:.08em;margin-bottom:.4rem}
+  .tl-item h4{font-size:1.1rem;margin-bottom:.4rem}
+  .tl-item p{color:var(--text-soft);font-size:.92rem;line-height:1.7;max-width:36rem}
+  .rules-wrap{display:grid;grid-template-columns:1fr 1.8fr;gap:4rem;align-items:start}
+  @media (max-width:900px){.rules-wrap{grid-template-columns:1fr;gap:2rem}}
+  .rules-notice{backdrop-filter:blur(20px) saturate(1.3);-webkit-backdrop-filter:blur(20px) saturate(1.3);background:var(--bg-glass);border:1px solid var(--line);border-radius:20px;padding:2rem;position:sticky;top:100px}
+  .rules-notice .quote{font-family:'Noto Serif SC',serif;font-size:1.3rem;font-weight:700;line-height:1.5;margin:1rem 0 1.5rem;color:var(--text)}
+  .rules-notice .quote .accent{color:var(--accent)}
+  .rules-notice .notice-label{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem;display:block}
+  .rules-notice p{color:var(--text-soft);font-size:.9rem;line-height:1.7;margin-bottom:1.25rem}
+  .contact-block{margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--line-soft)}
+  .contact-block .label{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-mute);margin-bottom:.4rem}
+  .contact-block .email{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent);word-break:break-all}
+  .rules-list{backdrop-filter:blur(20px) saturate(1.3);-webkit-backdrop-filter:blur(20px) saturate(1.3);background:var(--bg-glass);border:1px solid var(--line);border-radius:20px;overflow:hidden}
+  .rule-item{padding:1.25rem 2rem;border-bottom:1px solid var(--line-soft);display:grid;grid-template-columns:auto 1fr;gap:1.25rem;align-items:start;transition:background 300ms ease}
+  .rule-item:last-child{border-bottom:none}
+  .rule-item:hover{background:rgba(232,168,124,0.04)}
+  .rule-num{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);letter-spacing:.1em;padding-top:4px;min-width:36px}
+  .rule-content p{font-size:.92rem;color:var(--text-soft);line-height:1.7}
+  .rule-content p strong{color:var(--text);font-weight:500}
+  footer{padding:4rem 0 2rem;border-top:1px solid var(--line-soft);position:relative;z-index:1}
+  .footer-inner{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:2rem}
+  .footer-brand .logo-text{font-size:20px}
+  .footer-tag{color:var(--text-mute);font-size:13px;margin-top:.5rem;max-width:24rem;line-height:1.6}
+  .footer-meta{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-mute);letter-spacing:.05em;text-align:right}
+  .footer-meta div+div{margin-top:4px}
+  #shiroko-credit{display:flex;align-items:center;gap:.4rem;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-mute);letter-spacing:.05em;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--line-soft);width:100%}
+  #shiroko-credit .ck-dot{width:4px;height:4px;border-radius:50%;background:var(--accent);opacity:.6}
+  #shiroko-credit b{color:var(--accent);font-weight:500}
+  .reveal{opacity:0;transform:translateY(40px);transition:opacity 1100ms cubic-bezier(.22,1,.36,1),transform 1100ms cubic-bezier(.22,1,.36,1)}
+  .reveal.is-in{opacity:1;transform:none}
+  .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg-glass-strong);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--line);color:var(--text);padding:.85rem 1.5rem;border-radius:100px;font-size:13px;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity 400ms ease,transform 400ms cubic-bezier(.22,1,.36,1);z-index:200;display:flex;align-items:center;gap:.6rem}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast-dot{width:6px;height:6px;border-radius:50%;background:var(--good)}
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+    .reveal{opacity:1;transform:none}
+    .line{transform:none}
+    .hero::before{animation:none}
+  }
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="logo">
+      <span class="logo-mark" aria-hidden="true"></span>
+      <span class="logo-text">Dawn Shine<small>黎明初露</small></span>
+    </a>
+    <div class="nav-links">
+      <a href="#about">关于</a>
+      <a href="#timeline">时间线</a>
+      <a href="#rules">规则</a>
+      <a href="#join">加入</a>
+    </div>
+    <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+      <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" /></svg>
+      <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
+    </button>
+  </div>
+</nav>
+<section class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <span class="eyebrow hero-eyebrow" id="heroEyebrow">PURE VANILLA · SINCE 2026.03.11</span>
+        
+        <!-- ====== 红框区域：添加的标语内容 ====== -->
+        <div class="hero-tagline" id="heroTagline">
+          在这里，<span class="accent">公平</span>与<span class="accent">努力</span>才是核心！
+        </div>
+        
+        <h1 class="hero-title" id="heroTitle">
+          <span class="line-mask"><span class="line" data-line="1">黎明</span></span>
+          <span class="line-mask"><span class="line" data-line="2"><span class="accent">初</span>露</span></span>
+          <span class="en">Dawn Shine · A Pure Vanilla World</span>
+        </h1>
+        <p class="hero-sub" id="heroSub">
+          纯原版生存，仅启用登录插件。<br>
+          没有经济系统、没有领地插件、没有付费变强——<br>
+          在这里，公平与努力才是核心。
+        </p>
+        <div class="hero-cta" id="heroCta">
+          <button class="btn btn-primary" id="copyHeroIp">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
+            复制服务器地址
+          </button>
+          <a href="#about" class="btn btn-ghost">了解服务器<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7" /></svg></a>
+        </div>
+        <!-- 实时数据条：三大数字横排，撑满 hero 左侧底部 -->
+        <div class="hero-stats" id="heroStats">
+          <div class="hero-stat is-accent">
+            <div class="hs-label">在线 / ONLINE</div>
+            <div class="hs-value">
+              <span id="hsOnline">—</span>
+              <span class="hs-max">/ <span id="hsMax">—</span></span>
+            </div>
+          </div>
+          <div class="hero-stat">
+            <div class="hs-label">延迟 / LATENCY</div>
+            <div class="hs-value">
+              <span id="hsLatency">—</span>
+              <span class="hs-unit">ms</span>
+            </div>
+          </div>
+          <div class="hero-stat">
+            <div class="hs-label">版本 / VERSION</div>
+            <div class="hs-value" id="hsVersion" style="font-size:clamp(1rem,1.8vw,1.4rem);">—</div>
+          </div>
+        </div>
+      </div>
+      <div class="status-card" id="statusCard">
+        <div class="status-head">
+          <h3>Server Status</h3>
+          <span class="status-pill loading" id="statusPill"><span class="status-dot"></span><span id="statusPillText">检测中</span></span>
+        </div>
+        <div class="status-icon-row">
+          <div class="server-icon" id="serverIcon"><span class="server-icon-placeholder">D</span></div>
+          <div class="status-motd">
+            <div class="name" id="serverName">Dawn Shine · 黎明初露</div>
+            <div class="motd" id="serverMotd">正在读取服务器信息…</div>
+          </div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-block">
+            <div class="label">在线玩家</div>
+            <div class="value"><span id="playerOnline">—</span><span class="max">/ <span id="playerMax">—</span></span></div>
+            <div class="player-bar"><div class="player-bar-fill" id="playerBarFill"></div></div>
+          </div>
+          <div class="stat-block">
+            <div class="label">版本</div>
+            <div class="value" id="serverVersion" style="font-size:14px;line-height:1.3;">—</div>
+          </div>
+          <div class="stat-block">
+            <div class="label">延迟</div>
+            <div class="value"><span id="serverLatency">—</span><span class="unit">ms</span></div>
+          </div>
+        </div>
+        <div class="ip-block">
+          <div>
+            <div class="ip-label">Server Address</div>
+            <div class="ip-value" id="ipValue">mm.rainplay.cn:46487</div>
+          </div>
+          <button class="copy-btn" id="copyBtn" aria-label="复制 IP">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <span>SCROLL</span>
+    <span class="sh-line"></span>
+  </div>
+</section>
+<section id="about">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">ABOUT THE SERVER</span>
+      <h2>纯原版，是态度，不是简陋。</h2>
+      <p>服务器只安装了一个登录插件用于账号认证，除此之外——没有任何会改变游戏体验的插件。原版附魔、原版红石、原版战斗、原版经济（如果你要和人交易，那就摆个箱子手动换）。</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <div class="feature-num">01 / VANILLA</div>
+        <h3>纯原版生存</h3>
+        <p>不修改任何核心机制。战斗数值、怪物 AI、附魔概率、刷怪规则全部保持原版。你熟悉的一切都在这里——只是世界更长久，节奏更慢。</p>
+        <span class="feature-tag">NO MODS · NO PLUGINS (EXCEPT LOGIN)</span>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-num">02 / LOGIN</div>
+        <h3>仅登录插件</h3>
+        <p>服务器仅安装登录认证插件，保护你的账号安全。进入服务器后使用 <code>/register 密码 重复密码</code> 注册，下次进入用 <code>/login 密码</code> 登录即可。</p>
+        <span class="feature-tag">AUTH · /register · /login</span>
+      </div>
+    </div>
+  </div>
+</section>
+<section id="timeline">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">SERVER TIMELINE</span>
+      <h2>从 2026 年的那个三月开始</h2>
+      <p>服务器还很年轻，但会一直在这里。</p>
+    </div>
+    <div class="timeline-wrap reveal">
+      <div class="tl-item">
+        <div class="tl-date">2026.03.11</div>
+        <h4>服务器正式开服</h4>
+        <p>Dawn Shine 黎明初露正式上线。纯原版服务端 + 登录插件，出生点主城搭建完成，开放首批玩家入驻。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">2026.03</div>
+        <h4>第一批黎明居民</h4>
+        <p>第一批玩家在主城周边落地生根，开始各自的生存之旅。没有圈地、没有商店，所有交易靠人与人之间的信任。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">未来</div>
+        <h4>持续维护，不改变本质</h4>
+        <p>服务器将长期维护，不引入付费变强、不添加改变玩法内核的插件。原版的纯粹，是我们对每一位玩家的承诺。</p>
+      </div>
+    </div>
+  </div>
+</section>
+<section id="rules">
+  <div class="container">
+    <div class="rules-wrap">
+      <div class="rules-notice reveal">
+        <span class="eyebrow">SERVER RULES</span>
+        <div class="quote">在这里，<span class="accent">公平</span>与<span class="accent">努力</span>才是核心！</div>
+        <span class="notice-label">重要提醒 · 玩家须知</span>
+        <p>请认真阅读以下规则。违反规则将视情节轻重给予警告、封禁等处理。规则的存在不是为了限制，而是为了让每个人都能在黎明初露拥有一段公平的生存旅程。</p>
+        <div class="contact-block">
+          <div class="label" style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-mute);margin-bottom:.5rem;">服主联系方式</div>
+          <div style="font-size:13px;color:var(--text-soft);margin-bottom:.3rem;">如需反馈问题、报告违规、申请协调矛盾，请联系服主：</div>
+          <div class="email">tfchc2024@outlook.com</div>
+        </div>
+      </div>
+      <div class="rules-list reveal">
+        <div class="rule-item"><div class="rule-num">01</div><div class="rule-content"><p><strong>不前往其他玩家的房子进行未同意的收集物资。</strong>别人的家就是别人的家，进门前先问。</p></div></div>
+        <div class="rule-item"><div class="rule-num">02</div><div class="rule-content"><p><strong>不准在出生点刷新手。</strong>你以为你很了不起？——并不是。</p></div></div>
+        <div class="rule-item"><div class="rule-num">03</div><div class="rule-content"><p><strong>不开外挂，不乱卡服。</strong>一经发现，永久封禁，无申诉。</p></div></div>
+        <div class="rule-item"><div class="rule-num">04</div><div class="rule-content"><p><strong>请勿在主城破坏方块、破坏地形、堆叠方块。</strong>主城是所有人的家。</p></div></div>
+        <div class="rule-item"><div class="rule-num">05</div><div class="rule-content"><p><strong>请勿破坏游戏体验。</strong>包括但不限于恶意刷屏、辱骂、骚扰。</p></div></div>
+        <div class="rule-item"><div class="rule-num">06</div><div class="rule-content"><p><strong>请勿破坏其他玩家的游戏体验。</strong>每个人来这里是来玩的，不是来被欺负的。</p></div></div>
+        <div class="rule-item"><div class="rule-num">07</div><div class="rule-content"><p><strong>请勿恶意损坏他人房子、建筑、商店等。</strong>尊重他人的劳动成果。</p></div></div>
+        <div class="rule-item"><div class="rule-num">08</div><div class="rule-content"><p><strong>请勿申请管理员 / OP 权限。</strong>管理员不对外招募，私聊申请一律忽略。</p></div></div>
+        <div class="rule-item"><div class="rule-num">09</div><div class="rule-content"><p><strong>请勿恶意向其他玩家进行 PVP。</strong>对方同意的切磋除外，偷袭、追杀一律按违规处理。</p></div></div>
+        <div class="rule-item"><div class="rule-num">10</div><div class="rule-content"><p><strong>如需反馈问题，请到下方服主联系方式进行反馈。</strong>不要在游戏内刷屏反馈，邮件是最有效的渠道。</p></div></div>
+        <div class="rule-item"><div class="rule-num">11</div><div class="rule-content"><p><strong>如发生矛盾，请及时联系管理员、服主、副服主。</strong>不要私自动手，让协调者来处理。</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+<section id="join">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">HOW TO JOIN</span>
+      <h2>四步进入黎明</h2>
+      <p>从启动游戏到踏入出生点，平均只需 90 秒。</p>
+    </div>
+    <div class="features-grid" style="grid-template-columns:repeat(4,1fr);">
+      <div class="feature-card reveal" style="padding:2rem 1.5rem;">
+        <div class="feature-num">STEP 01</div>
+        <h3 style="font-size:1.15rem;">启动 Minecraft</h3>
+        <p>打开 Java 版启动器，版本请参考右侧状态卡显示的当前服务器版本。建议使用官方启动器或 PCL。</p>
+      </div>
+      <div class="feature-card reveal" style="padding:2rem 1.5rem;">
+        <div class="feature-num">STEP 02</div>
+        <h3 style="font-size:1.15rem;">添加服务器</h3>
+        <p>点击"多人游戏" → "添加服务器"，服务器名称随意，地址填 <code>mm.rainplay.cn:46487</code>。</p>
+      </div>
+      <div class="feature-card reveal" style="padding:2rem 1.5rem;">
+        <div class="feature-num">STEP 03</div>
+        <h3 style="font-size:1.15rem;">注册登录</h3>
+        <p>首次进入输入 <code>/register 密码 重复密码</code>，之后每次进入用 <code>/login 密码</code>。</p>
+      </div>
+      <div class="feature-card reveal" style="padding:2rem 1.5rem;">
+        <div class="feature-num">STEP 04</div>
+        <h3 style="font-size:1.15rem;">开始生存</h3>
+        <p>读完出生点规则牌后走出主城，找一片你喜欢的地，开始你的黎明之旅。</p>
+      </div>
+    </div>
+  </div>
+</section>
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="logo-text">Dawn Shine · 黎明初露</div>
+        <p class="footer-tag">纯原版 Minecraft 生存服务器。<br>在这里，第一缕光永远留给愿意等待的人。</p>
+        <div id="shiroko-credit" data-protected="1">
+          <span class="ck-dot"></span>
+          <span>网站由 <a href="https://shirokoabds.github.io/" target="_blank" rel="noopener noreferrer"><b>ShirokoABDS</b></a> 制作</span>
+        </div>
+      </div>
+      <div class="footer-meta">
+        <div>SERVER · mm.rainplay.cn:46487</div>
+        <div>SINCE · 2026.03.11</div>
+        <div>VERSION · <span id="footerVersion">JAVA EDITION</span></div>
+        <div>© 2026 黎明初露版权所有</div>
+      </div>
+    </div>
+  </div>
+</footer>
+<div class="toast" id="toast"><span class="toast-dot"></span><span id="toastText">已复制到剪贴板</span></div>
+<script type="importmap">
+{ "imports": { "three": "https://unpkg.com/three@0.183/build/three.module.js" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isCoarse = window.matchMedia('(pointer: coarse)').matches;
+/* THEME */
+const root = document.documentElement;
+const themeToggle = document.getElementById('themeToggle');
+const savedTheme = localStorage.getItem('dawnshine-theme');
+if (savedTheme) root.setAttribute('data-theme', savedTheme);
+else if (window.matchMedia('(prefers-color-scheme: light)').matches) root.setAttribute('data-theme', 'light');
+themeToggle.addEventListener('click', () => {
+  const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  root.setAttribute('data-theme', next);
+  localStorage.setItem('dawnshine-theme', next);
+});
+/* PARTICLES */
+if (!prefersReducedMotion) {
+  const canvas = document.getElementById('bg-canvas');
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
+  camera.position.z = 8;
+  const COUNT = isCoarse ? 600 : 1200;
+  const positions = new Float32Array(COUNT*3), sizes = new Float32Array(COUNT), offsets = new Float32Array(COUNT);
+  for (let i=0;i<COUNT;i++){
+    positions[i*3]=(Math.random()-0.5)*22; positions[i*3+1]=(Math.random()-0.5)*16; positions[i*3+2]=(Math.random()-0.5)*14;
+    sizes[i]=Math.random()*1.6+0.3; offsets[i]=Math.random()*Math.PI*2;
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(positions,3));
+  geo.setAttribute('aSize', new THREE.BufferAttribute(sizes,1));
+  geo.setAttribute('aOffset', new THREE.BufferAttribute(offsets,1));
+  const mat = new THREE.ShaderMaterial({
+    uniforms:{ uTime:{value:0}, uColor:{value:new THREE.Color(0xe8a87c)} },
+    vertexShader:`attribute float aSize;attribute float aOffset;uniform float uTime;varying float vAlpha;
+      void main(){vec3 p=position;p.y+=sin(uTime*0.3+aOffset)*0.4;p.x+=cos(uTime*0.25+aOffset*0.7)*0.3;
+      vec4 mv=modelViewMatrix*vec4(p,1.0);gl_PointSize=aSize*(180.0/-mv.z);gl_Position=projectionMatrix*mv;
+      vAlpha=0.45+0.55*sin(uTime*0.6+aOffset);}`,
+    fragmentShader:`varying float vAlpha;uniform vec3 uColor;void main(){vec2 uv=gl_PointCoord-vec2(0.5);
+      float d=length(uv);if(d>0.5)discard;float a=smoothstep(0.5,0.0,d)*vAlpha;gl_FragColor=vec4(uColor,a*0.55);}`,
+    transparent:true, depthWrite:false, blending:THREE.AdditiveBlending
+  });
+  const points = new THREE.Points(geo, mat);
+  scene.add(points);
+  let mouseX=0, mouseY=0, targetRotX=0, targetRotY=0;
+  if (!isCoarse) window.addEventListener('mousemove', e=>{
+    mouseX=(e.clientX/window.innerWidth-0.5)*2; mouseY=(e.clientY/window.innerHeight-0.5)*2;
+  });
+  const clock = new THREE.Clock();
+  let visible = true;
+  new IntersectionObserver(es=>{visible=es[0].isIntersecting;}).observe(canvas);
+  function animate(){
+    requestAnimationFrame(animate);
+    if(!visible) return;
+    const t = clock.getElapsedTime();
+    mat.uniforms.uTime.value = t;
+    targetRotY += (mouseX*0.15 - targetRotY)*0.04;
+    targetRotX += (mouseY*0.10 - targetRotX)*0.04;
+    points.rotation.y = targetRotY + t*0.02;
+    points.rotation.x = targetRotX;
+    const theme = root.getAttribute('data-theme');
+    const tc = theme==='dark' ? new THREE.Color(0xe8a87c) : new THREE.Color(0xc9612a);
+    mat.uniforms.uColor.value.lerp(tc, 0.05);
+    renderer.render(scene, camera);
+  }
+  animate();
+  window.addEventListener('resize', ()=>{
+    camera.aspect = window.innerWidth/window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+}
+/* HERO INTRO — 六拍编排，新增 tagline */
+const heroEls = [
+  { el: document.getElementById('heroEyebrow'), delay: 100 },
+  { el: document.getElementById('heroTagline'), delay: 250 },
+  { el: document.querySelector('.hero-title .line[data-line="1"]'), delay: 300 },
+  { el: document.querySelector('.hero-title .line[data-line="2"]'), delay: 420 },
+  { el: document.getElementById('heroSub'), delay: 700 },
+  { el: document.getElementById('heroCta'), delay: 880 },
+  { el: document.getElementById('heroStats'), delay: 1050 }
+];
+heroEls.forEach(({el, delay}) => {
+  if (!el) return;
+  setTimeout(()=>{
+    el.style.transition = 'opacity 1100ms cubic-bezier(.22,1,.36,1), transform 1100ms cubic-bezier(.22,1,.36,1)';
+    el.style.opacity = '1';
+    el.style.transform = 'translateY(0)';
+  }, delay);
+});
+/* REVEAL */
+const ro = new IntersectionObserver(es=>{
+  es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('is-in'); ro.unobserve(e.target); } });
+}, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+document.querySelectorAll('.reveal').forEach(el=>ro.observe(el));
+/* COPY IP */
+const SERVER_IP = 'mm.rainplay.cn:46487';
+const toast = document.getElementById('toast');
+const toastText = document.getElementById('toastText');
+function showToast(msg){
+  toastText.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(()=>toast.classList.remove('show'), 2200);
+}
+function copyIP(btn){
+  navigator.clipboard.writeText(SERVER_IP).then(()=>{
+    if(btn){ btn.classList.add('copied'); setTimeout(()=>btn.classList.remove('copied'),1500); }
+    showToast('服务器地址已复制 · ' + SERVER_IP);
+  }).catch(()=>{
+    const ta = document.createElement('textarea'); ta.value = SERVER_IP;
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); showToast('服务器地址已复制'); }catch(e){ showToast('复制失败，请手动复制'); }
+    document.body.removeChild(ta);
+  });
+}
+document.getElementById('copyBtn').addEventListener('click', e=>copyIP(e.currentTarget));
+document.getElementById('copyHeroIp').addEventListener('click', ()=>copyIP(null));
+/* ============ SERVER STATUS 修复版 ============ */
+const statusPill = document.getElementById('statusPill');
+const statusPillText = document.getElementById('statusPillText');
+const serverIconEl = document.getElementById('serverIcon');
+const serverNameEl = document.getElementById('serverName');
+const serverMotdEl = document.getElementById('serverMotd');
+const playerOnlineEl = document.getElementById('playerOnline');
+const playerMaxEl = document.getElementById('playerMax');
+const playerBarFill = document.getElementById('playerBarFill');
+const serverVersionEl = document.getElementById('serverVersion');
+const serverLatencyEl = document.getElementById('serverLatency');
+const footerVersionEl = document.getElementById('footerVersion');
+// hero 数据条同步元素
+const hsOnline = document.getElementById('hsOnline');
+const hsMax = document.getElementById('hsMax');
+const hsLatency = document.getElementById('hsLatency');
+const hsVersion = document.getElementById('hsVersion');
+function setStatus(state){
+  statusPill.className = 'status-pill ' + state;
+  statusPillText.textContent = state==='online' ? '在线' : state==='offline' ? '离线' : '检测中';
+}
+function parseOnline(val){
+  if (typeof val === 'boolean') return val;
+  if (typeof val === 'number') return val === 1;
+  if (typeof val === 'string') return val.toLowerCase() === 'true' || val === '1' || val.toLowerCase() === 'online';
+  return false;
+}
+async function fetchStatus(){
+  try {
+    const targetUrl = `https://api.mcsrvstat.us/3/${SERVER_IP}`;
+    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
+    const res = await fetch(proxyUrl);
+    if (!res.ok) throw new Error('http ' + res.status);
+    const data = await res.json();
+    // 直接读取原始数据，移除多余d.data嵌套，修复解析错误
+    if (parseOnline(data.online)) {
+      setStatus('online');
+      const motd = data.motd || '';
+      serverMotdEl.textContent = motd || '—';
+      serverMotdEl.title = motd;
+      const host = data.host || '';
+      if (host) serverNameEl.textContent = host;
+      const players = data.players || {};
+      const onNum = Number(players.online) || 0;
+      const maxNum = Number(players.max) || 0;
+      playerOnlineEl.textContent = onNum;
+      playerMaxEl.textContent = maxNum || '—';
+      playerBarFill.style.width = (maxNum > 0 ? (onNum / maxNum * 100) : 0) + '%';
+      const ver = data.version || '';
+      if (ver) {
+        serverVersionEl.textContent = ver;
+        footerVersionEl.textContent = ver.toUpperCase();
+      }
+      const latency = Number(data.latency);
+      const latencyStr = (latency >= 0 && !isNaN(latency)) ? latency : '—';
+      serverLatencyEl.textContent = latencyStr;
+      // 同步hero顶部数据
+      hsOnline.textContent = onNum;
+      hsMax.textContent = maxNum || '—';
+      hsLatency.textContent = latencyStr;
+      hsVersion.textContent = ver || '—';
+    } else {
+      setStatus('offline');
+      serverMotdEl.textContent = '服务器当前未响应，请稍后再试';
+      playerOnlineEl.textContent = '0';
+      playerMaxEl.textContent = '—';
+      serverLatencyEl.textContent = '—';
+      playerBarFill.style.width = '0%';
+      hsOnline.textContent = '0';
+      hsMax.textContent = '—';
+      hsLatency.textContent = '—';
+      hsVersion.textContent = '—';
+    }
+  } catch (err) {
+    console.error('接口请求失败：', err);
+    setStatus('offline');
+    serverMotdEl.textContent = '无法连接状态服务，请直接尝试加入';
+    playerOnlineEl.textContent = '—';
+    playerMaxEl.textContent = '—';
+    serverLatencyEl.textContent = '—';
+    hsOnline.textContent = '—';
+    hsMax.textContent = '—';
+    hsLatency.textContent = '—';
+    hsVersion.textContent = '—';
+  }
+}
+fetchStatus();
+setInterval(fetchStatus, 60000);
+/* ============ CREDIT GUARD ============ */
+(function creditGuard(){
+  const _frozen = Object.freeze({
+    creditText: '网站由 ShirokoABDS 制作',
+    author: 'ShirokoABDS'
+  });
+  try { Object.defineProperty(window, '__dawnshine_credit__', { value: _frozen, writable: false, configurable: false }); } catch(e){}
+  function buildCreditNode(){
+    const wrap = document.createElement('div');
+    wrap.id = 'shiroko-credit';
+    wrap.setAttribute('data-protected', '1');
+    wrap.setAttribute('aria-label', 'website credit');
+    const dot = document.createElement('span');
+    dot.className = 'ck-dot';
+    const txt = document.createElement('span');
+    txt.innerHTML = '网站由 <a href="https://shirokoabds.github.io/" target="_blank" rel="noopener noreferrer"><b>' + _frozen.author + '</b></a> 制作';
+    wrap.appendChild(dot);
+    wrap.appendChild(txt);
+    return wrap;
+  }
+  function ensureCredit(){
+    const existing = document.getElementById('shiroko-credit');
+    if (!existing || existing.getAttribute('data-protected') !== '1' || !existing.querySelector('a[href="https://shirokoabds.github.io/"]')) {
+      const footer = document.querySelector('.footer-brand');
+      if (footer) {
+        if (existing) existing.remove();
+        footer.appendChild(buildCreditNode());
+        return true;
+      }
+    }
+    return false;
+  }
+  ensureCredit();
+  const obs = new MutationObserver(muts => {
+    for (const m of muts) {
+      if (m.type === 'childList') {
+        for (const node of m.removedNodes) {
+          if (node.id === 'shiroko-credit' || (node.querySelector && node.querySelector('#shiroko-credit'))) {
+            console.warn('[Dawn Shine] 版权信息已重建 · 网站由 ShirokoABDS 制作');
+            ensureCredit();
+          }
+        }
+      }
+      if (m.type === 'attributes' || m.type === 'characterData') {
+        const target = m.target;
+        if (target && target.closest && target.closest('#shiroko-credit')) {
+          ensureCredit();
+        }
+      }
+    }
+  });
+  if (document.body) {
+    obs.observe(document.body, { childList: true, subtree: true, attributes: true, characterData: true });
+  }
+  setInterval(()=>{
+    const c = document.getElementById('shiroko-credit');
+    if (!c || !c.querySelector('a[href="https://shirokoabds.github.io/"]')) {
+      ensureCredit();
+    }
+  }, 2000);
+  const css1 = 'color:#e8a87c;font-weight:bold;font-size:14px;';
+  const css2 = 'color:#a8a097;font-size:11px;';
+  console.log('%c Dawn Shine · 黎明初露 ', css1);
+  console.log('%c Website crafted by ShirokoABDS · 请勿移除版权信息 ', css2);
+  window.addEventListener('load', ensureCredit);
+})();
+</script>
+</body>
+</html>
