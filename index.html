@@ -257,7 +257,6 @@
   .status-pill{display:inline-flex;align-items:center;gap:.5rem;padding:.35rem .85rem;border-radius:100px;font-size:11px;font-weight:500;letter-spacing:.08em;font-family:'JetBrains Mono',monospace}
   .status-pill.online{background:rgba(155,207,143,0.12);color:var(--good);border:1px solid rgba(155,207,143,0.3)}
   .status-pill.offline{background:rgba(220,100,100,0.12);color:var(--bad);border:1px solid rgba(220,100,100,0.3)}
-  .status-pill.restricted{background:rgba(232,168,124,0.12);color:var(--accent);border:1px solid rgba(232,168,124,0.3)}
   .status-pill.loading{background:rgba(232,168,124,0.12);color:var(--accent);border:1px solid rgba(232,168,124,0.3)}
   .status-dot{width:6px;height:6px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor;animation:pulse 2s ease-in-out infinite}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
@@ -431,11 +430,42 @@
         </div>
       </div>
 
-      <div class="status-card" id="statusCard" style="padding: 1.5rem; text-align: center;">
-        <a href="https://list.mczfw.com/?ip=mm.rainplay.cn:46487" target="_blank" rel="noopener noreferrer" style="display: inline-block;">
-          <img src="https://list.mczfw.com/mc/mm.rainplay.cn:46487.png" alt="Dawn Shine 服务器实时状态" style="max-width: 100%; height: auto; border-radius: 8px; image-rendering: pixelated;">
-        </a>
-        <p style="margin-top: 0.75rem; font-size: 12px; color: var(--text-mute);"</p>
+      <div class="status-card" id="statusCard">
+        <div class="status-head">
+          <h3>Server Status</h3>
+          <span class="status-pill loading" id="statusPill"><span class="status-dot"></span><span id="statusPillText">检测中</span></span>
+        </div>
+        <div class="status-icon-row">
+          <div class="server-icon" id="serverIcon"><span class="server-icon-placeholder">D</span></div>
+          <div class="status-motd">
+            <div class="name" id="serverName">Dawn Shine · 黎明初露</div>
+            <div class="motd" id="serverMotd">正在读取服务器信息…</div>
+          </div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-block">
+            <div class="label">在线玩家</div>
+            <div class="value"><span id="playerOnline">—</span><span class="max">/ <span id="playerMax">—</span></span></div>
+            <div class="player-bar"><div class="player-bar-fill" id="playerBarFill"></div></div>
+          </div>
+          <div class="stat-block">
+            <div class="label">版本</div>
+            <div class="value" id="serverVersion" style="font-size:14px;line-height:1.3;">—</div>
+          </div>
+          <div class="stat-block">
+            <div class="label">延迟</div>
+            <div class="value"><span id="serverLatency">—</span><span class="unit">ms</span></div>
+          </div>
+        </div>
+        <div class="ip-block">
+          <div>
+            <div class="ip-label">Server Address</div>
+            <div class="ip-value" id="ipValue">mm.rainplay.cn:46487</div>
+          </div>
+          <button class="copy-btn" id="copyBtn" aria-label="复制 IP">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -718,8 +748,100 @@ function copyIP(btn){
 document.getElementById('copyBtn').addEventListener('click', e=>copyIP(e.currentTarget));
 document.getElementById('copyHeroIp').addEventListener('click', ()=>copyIP(null));
 
-/* ============ 状态查询已替换为图片展示 ============ */
-// 实时状态通过 mczfw.com 图片服务展示，无需 JS 轮询
+/* ============ SERVER STATUS — list.mczfw.com ============ */
+const statusPill = document.getElementById('statusPill');
+const statusPillText = document.getElementById('statusPillText');
+const serverIconEl = document.getElementById('serverIcon');
+const serverNameEl = document.getElementById('serverName');
+const serverMotdEl = document.getElementById('serverMotd');
+const playerOnlineEl = document.getElementById('playerOnline');
+const playerMaxEl = document.getElementById('playerMax');
+const playerBarFill = document.getElementById('playerBarFill');
+const serverVersionEl = document.getElementById('serverVersion');
+const serverLatencyEl = document.getElementById('serverLatency');
+const footerVersionEl = document.getElementById('footerVersion');
+
+// hero 数据条同步元素
+const hsOnline = document.getElementById('hsOnline');
+const hsMax = document.getElementById('hsMax');
+const hsLatency = document.getElementById('hsLatency');
+const hsVersion = document.getElementById('hsVersion');
+
+function setStatus(state){
+  statusPill.className = 'status-pill ' + state;
+  statusPillText.textContent = state==='online' ? '在线' : state==='offline' ? '离线' : '检测中';
+}
+
+async function fetchStatus(){
+  try {
+    const res = await fetch(`https://list.mczfw.com/api/${SERVER_IP}`, { cache: 'no-store' });
+    if (!res.ok) throw new Error('http ' + res.status);
+    const data = await res.json();
+
+    if (data.p !== undefined && data.p !== null) {
+      setStatus('online');
+
+      const motd = data.motd || '';
+      serverMotdEl.textContent = motd || '—';
+      serverMotdEl.title = motd;
+
+      const host = data.host || data.hostname || '';
+      if (host) serverNameEl.textContent = host;
+
+      const onNum = Number(data.p) || 0;
+      const maxNum = Number(data.mp) || 0;
+      playerOnlineEl.textContent = onNum;
+      playerMaxEl.textContent = maxNum || '—';
+      playerBarFill.style.width = (maxNum > 0 ? (onNum / maxNum * 100) : 0) + '%';
+
+      const ver = data.version || '';
+      if (ver) {
+        serverVersionEl.textContent = ver;
+        footerVersionEl.textContent = ver.toUpperCase();
+      }
+
+      const latency = Number(data.ping);
+      const latencyStr = (latency >= 0 && !isNaN(latency)) ? latency : '—';
+      serverLatencyEl.textContent = latencyStr;
+
+      if (data.logo) {
+        serverIconEl.innerHTML = `<img src="${data.logo}" alt="server icon" style="width:100%;height:100%;object-fit:cover;image-rendering:pixelated">`;
+      }
+
+      // 同步到 hero 数据条
+      hsOnline.textContent = onNum;
+      hsMax.textContent = maxNum || '—';
+      hsLatency.textContent = latencyStr;
+      hsVersion.textContent = ver || '—';
+
+    } else {
+      setStatus('offline');
+      serverMotdEl.textContent = '服务器当前未响应，请稍后再试';
+      playerOnlineEl.textContent = '0';
+      playerMaxEl.textContent = '—';
+      serverVersionEl.textContent = '—';
+      serverLatencyEl.textContent = '—';
+      playerBarFill.style.width = '0%';
+      hsOnline.textContent = '0';
+      hsMax.textContent = '—';
+      hsLatency.textContent = '—';
+      hsVersion.textContent = '—';
+    }
+  } catch (err) {
+    setStatus('offline');
+    serverMotdEl.textContent = '无法连接状态服务，请直接尝试加入';
+    playerOnlineEl.textContent = '—';
+    playerMaxEl.textContent = '—';
+    serverVersionEl.textContent = '—';
+    serverLatencyEl.textContent = '—';
+    hsOnline.textContent = '—';
+    hsMax.textContent = '—';
+    hsLatency.textContent = '—';
+    hsVersion.textContent = '—';
+  }
+}
+fetchStatus();
+setInterval(fetchStatus, 60000);
 
 /* ============ CREDIT GUARD ============ */
 (function creditGuard(){
@@ -738,7 +860,7 @@ document.getElementById('copyHeroIp').addEventListener('click', ()=>copyIP(null)
     dot.className = 'ck-dot';
     const txt = document.createElement('span');
     // 修改：将ShirokoABDS改为可点击链接
-    txt.innerHTML = '网站由 <a href="" target="_blank" rel="noopener noreferrer"><b>' + _frozen.author + '</b></a> 制作';
+    txt.innerHTML = '网站由 <a href="https://shirokoabds.github.io/" target="_blank" rel="noopener noreferrer"><b>' + _frozen.author + '</b></a> 制作';
     wrap.appendChild(dot);
     wrap.appendChild(txt);
     return wrap;
