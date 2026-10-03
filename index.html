@@ -603,7 +603,7 @@
         <!-- 修改版权信息，将ShirokoABDS改为可点击链接 -->
         <div id="shiroko-credit" data-protected="1">
           <span class="ck-dot"></span>
-          <span>网站由 <a href="" target="_blank" rel="noopener noreferrer"><b>ShirokoABDS</b></a> 制作</span>
+          <span>网站由 <a href="http://wtcraft.cc.cd" target="_blank" rel="noopener noreferrer"><b>ShirokoABDS</b></a> 制作</span>
         </div>
       </div>
       <div class="footer-meta">
@@ -869,7 +869,7 @@ setInterval(fetchStatus, 60000);
 
   function ensureCredit(){
     const existing = document.getElementById('shiroko-credit');
-    if (!existing || existing.getAttribute('data-protected') !== '1' || !existing.querySelector('a[href="https://shirokoabds.github.io/"]')) {
+    if (!existing || existing.getAttribute('data-protected') !== '1' || !existing.querySelector('a[href="http://wtcraft.cc.cd"]')) {
       const footer = document.querySelector('.footer-brand');
       if (footer) {
         if (existing) existing.remove();
@@ -906,7 +906,7 @@ setInterval(fetchStatus, 60000);
 
   setInterval(()=>{
     const c = document.getElementById('shiroko-credit');
-    if (!c || !c.querySelector('a[href="https://shirokoabds.github.io/"]')) {
+    if (!c || !c.querySelector('a[href="http://wtcraft.cc.cd"]')) {
       ensureCredit();
     }
   }, 2000);
