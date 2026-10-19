@@ -16,27 +16,34 @@ export async function onRequestGet({ env }) {
   const payload = await upstream.json().catch(() => null);
   if (!payload) return json({ error: '雨云返回了非 JSON 内容' }, 502);
 
-  const d = payload.data || payload;
+  const wrapper = payload.data || {};
+  const d = wrapper.Data || wrapper;            // 实例信息在这层
   const usage = d.UsageData || {};
   const egg = d.EggType && d.EggType.egg ? d.EggType.egg : {};
+  const natList = wrapper.NatList || d.NatList || [];
 
   return json({
     ok: true,
     status: d.Status ?? null,
+    stop_reason: d.StopReason ?? null,
     cpu: d.CPU ?? null,
     memory: d.Memory ?? null,
     base_disk: d.BaseDisk ?? null,
     data_disk: d.DataDisk ?? null,
     allocation: d.Allocation ?? null,
-    init_date: d.InitDate ?? null,
+    init_date: d.InitedDate ?? null,
+    exp_date: d.ExpDate ?? null,
+    host_name: d.HostName ?? null,
+    nat_domain: d.NatPublicDomain ?? null,
+    nat_ip: d.NatPublicIP ?? null,
     egg_title: egg.title ?? null,
     usage: {
       cpu: usage.CPU ?? null, mem: usage.Mem ?? null, mem_usage: usage.MemUsage ?? null,
-      disk: usage.Disk ?? null, net_in: usage.NetIn ?? null, net_out: usage.NetOut ?? null,
-      update_time: usage.UpdateTime ?? null,
+      disk: usage.Disk ?? null, disk_read: usage.DiskRead ?? null, disk_write: usage.DiskWrite ?? null,
+      net_in: usage.NetIn ?? null, net_out: usage.NetOut ?? null, update_time: usage.UpdateTime ?? null,
     },
-    nat: Array.isArray(d.NatList)
-      ? d.NatList.map((n) => ({ port_in: n.PortIn, port_out: n.PortOut, port_type: n.PortType }))
+    nat: Array.isArray(natList)
+      ? natList.map((n) => ({ port_in: n.PortIn, port_out: n.PortOut, port_type: n.PortType }))
       : [],
   }, 200);
 }
