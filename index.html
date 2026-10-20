@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark"><head>
+<html lang="zh-CN" data-theme="dark">
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dawn Shine · 黎明初露 — Minecraft 纯原版服务器</title>
 <meta name="description" content="Dawn Shine 黎明初露 · 纯原版 Minecraft 生存服务器，仅启用登录插件，公平与努力才是核心">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700;900&amp;family=Inter:wght@400;500;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700;900&family=Inter:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
   :root[data-theme="dark"]{
     --bg:#0e0d12; --bg-elev:#16151c; --bg-glass:rgba(28,25,35,0.55); --bg-glass-strong:rgba(28,25,35,0.78);
@@ -278,8 +279,16 @@
   .player-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-soft));width:0;transition:width 800ms cubic-bezier(.22,1,.36,1);border-radius:2px}
   .res-head{display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-bottom:.9rem;padding-top:1.5rem;border-top:1px solid var(--line-soft);font-family:'Inter',sans-serif;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-soft)}
   .res-head .res-src{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.04em;text-transform:none;color:var(--text-mute)}
-  .res-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;margin-bottom:1.5rem}
+  .res-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;margin-bottom:.6rem}
   @media (max-width:480px){.res-grid{grid-template-columns:1fr 1fr}}
+  .res-note{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-mute);margin-bottom:1.5rem;letter-spacing:.02em;line-height:1.6}
+  .res-trend{margin:0 0 1.5rem;padding:1rem 0 0;border-top:1px solid var(--line-soft)}
+  .res-trend-title{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-mute);margin-bottom:.85rem}
+  .trend-row{display:grid;grid-template-columns:46px 1fr auto;align-items:center;gap:.6rem;padding:.3rem 0}
+  .trend-label{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-soft);letter-spacing:.05em}
+  .spark{width:100%;height:24px;display:block;overflow:visible}
+  .trend-val{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);text-align:right;min-width:56px;white-space:nowrap}
+  .trend-val .tu{font-size:10px;color:var(--text-mute);margin-left:2px}
   .ip-block{background:var(--bg-elev);border:1px solid var(--line);border-radius:14px;padding:.85rem 1rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
   .ip-block .ip-label{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-mute);margin-bottom:2px}
   .ip-block .ip-value{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;color:var(--text);word-break:break-all}
@@ -375,8 +384,8 @@
       <a href="#join">加入</a>
     </div>
     <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
-      <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
-      <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
     </button>
   </div>
 </nav>
@@ -404,10 +413,10 @@
         </p>
         <div class="hero-cta" id="heroCta">
           <button class="btn btn-primary" id="copyHeroIp">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
             复制服务器地址
           </button>
-          <a href="#about" class="btn btn-ghost">了解服务器<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"></path></svg></a>
+          <a href="#about" class="btn btn-ghost">了解服务器<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
         </div>
 
         <!-- 实时数据条：三大数字横排，撑满 hero 左侧底部 -->
@@ -460,31 +469,13 @@
             <div class="value"><span id="serverLatency">—</span><span class="unit">ms</span></div>
           </div>
         </div>
-        <div class="res-head">
-          <span>服务器信息</span>
-          <span class="res-src" id="resSrc">等待同步</span>
-        </div>
-        <div class="res-grid">
-          <div class="stat-block">
-            <div class="label">实例状态</div>
-            <div class="value" id="resState" style="font-size:15px;line-height:1.3;">—</div>
-          </div>
-          <div class="stat-block">
-            <div class="label">CPU</div>
-            <div class="value"><span id="resCpu">—</span><span class="unit">核</span></div>
-          </div>
-          <div class="stat-block">
-            <div class="label">内存 / 磁盘</div>
-            <div class="value" style="font-size:15px;line-height:1.35;"><span id="resMem">—</span><span class="unit">GB</span> / <span id="resDisk">—</span><span class="unit">GB</span></div>
-          </div>
-        </div>
         <div class="ip-block">
           <div>
             <div class="ip-label">Server Address</div>
             <div class="ip-value" id="ipValue">pm.rainplay.cn:46487</div>
           </div>
           <button class="copy-btn" id="copyBtn" aria-label="复制 IP">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
           </button>
         </div>
       </div>
@@ -494,6 +485,55 @@
   <div class="scroll-hint">
     <span>SCROLL</span>
     <span class="sh-line"></span>
+  </div>
+</section>
+
+<section id="server">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">STEP 01 · OUR SERVER</span>
+      <h2>我们的服务器</h2>
+      <p>先看看这台服务器现在跑得怎么样——实例状态、CPU、内存占用，以及近一小时的实时监控趋势，全部来自雨云实例。</p>
+    </div>
+    <div class="status-card reveal" style="max-width:720px;">
+      <div class="res-head" style="border-top:none;padding-top:0">
+        <span>服务器资源 · 雨云实例</span>
+        <span class="res-src" id="resSrc">等待同步</span>
+      </div>
+      <div class="res-grid">
+        <div class="stat-block">
+          <div class="label">实例状态</div>
+          <div class="value" id="resState" style="font-size:15px;line-height:1.3;">—</div>
+        </div>
+        <div class="stat-block">
+          <div class="label">CPU 使用率</div>
+          <div class="value"><span id="resCpu">—</span><span class="unit">%</span></div>
+        </div>
+        <div class="stat-block">
+          <div class="label">内存占用</div>
+          <div class="value"><span id="resMem">—</span><span class="unit">%</span></div>
+        </div>
+      </div>
+      <div class="res-note" id="resSpec">—</div>
+      <div class="res-trend" id="resTrend" style="display:none">
+        <div class="res-trend-title">监控趋势 · 近 1 小时</div>
+        <div class="trend-row">
+          <span class="trend-label">CPU</span>
+          <svg class="spark" id="sparkCpu"></svg>
+          <span class="trend-val" id="valCpu">—</span>
+        </div>
+        <div class="trend-row">
+          <span class="trend-label">内存</span>
+          <svg class="spark" id="sparkMem"></svg>
+          <span class="trend-val" id="valMem">—</span>
+        </div>
+        <div class="trend-row">
+          <span class="trend-label">网络</span>
+          <svg class="spark" id="sparkNet"></svg>
+          <span class="trend-val" id="valNet">—</span>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -587,27 +627,27 @@
   <div class="container">
     <div class="section-head reveal">
       <span class="eyebrow">HOW TO JOIN</span>
-      <h2>四步进入黎明</h2>
+      <h2>五步进入黎明</h2>
       <p>从启动游戏到踏入出生点，平均只需 60 秒。</p>
     </div>
     <div class="features-grid" style="grid-template-columns:repeat(4,1fr);">
       <div class="feature-card reveal" style="padding:2rem 1.5rem;">
-        <div class="feature-num">STEP 01</div>
+        <div class="feature-num">STEP 02</div>
         <h3 style="font-size:1.15rem;">启动 Minecraft</h3>
         <p>打开 Java 版启动器，版本请参考右侧状态卡显示的当前服务器版本。建议使用官方启动器或 HMCL。</p>
       </div>
       <div class="feature-card reveal" style="padding:2rem 1.5rem;">
-        <div class="feature-num">STEP 02</div>
+        <div class="feature-num">STEP 03</div>
         <h3 style="font-size:1.15rem;">添加服务器</h3>
         <p>点击"多人游戏" → "添加服务器"，服务器名称随意，地址填 <code>mm.rainplay.cn:46487</code>。</p>
       </div>
       <div class="feature-card reveal" style="padding:2rem 1.5rem;">
-        <div class="feature-num">STEP 03</div>
+        <div class="feature-num">STEP 04</div>
         <h3 style="font-size:1.15rem;">注册登录</h3>
         <p>首次进入输入 <code>/register 密码 重复密码</code>，之后每次进入用 <code>/login 密码</code>。</p>
       </div>
       <div class="feature-card reveal" style="padding:2rem 1.5rem;">
-        <div class="feature-num">STEP 04</div>
+        <div class="feature-num">STEP 05</div>
         <h3 style="font-size:1.15rem;">开始生存</h3>
         <p>读完出生点规则牌后走出主城，找一片你喜欢的地，开始你的黎明之旅。</p>
       </div>
@@ -794,6 +834,16 @@ function setStatus(state){
   statusPillText.textContent = state==='online' ? '在线' : state==='offline' ? '离线' : '检测中';
 }
 
+// 剥离 Minecraft 格式化代码（§ 或 & + 颜色/格式字符），避免 MOTD / 版本里出现乱码
+function cleanMcText(str){
+  if (str == null) return '';
+  return String(str)
+    .replace(/§[0-9a-fk-orx]/gi, '')      // § 颜色/格式码
+    .replace(/\u00A7[0-9a-fk-orx]/gi, '') // Unicode § 码
+    .replace(/&[0-9a-fk-orx]/gi, '')      // & 颜色/格式码（部分接口使用）
+    .trim();
+}
+
 async function fetchStatus(){
   try {
     const res = await fetch(`https://list.mczfw.com/api/${SERVER_IP}`, { cache: 'no-store' });
@@ -803,11 +853,11 @@ async function fetchStatus(){
     if (data.p !== undefined && data.p !== null) {
       setStatus('online');
 
-      const motd = data.motd || '';
+      const motd = cleanMcText(data.motd || '');
       serverMotdEl.textContent = motd || '—';
       serverMotdEl.title = motd;
 
-      const host = data.host || data.hostname || '';
+      const host = cleanMcText(data.host || data.hostname || '');
       if (host) serverNameEl.textContent = host;
 
       const onNum = Number(data.p) || 0;
@@ -816,7 +866,7 @@ async function fetchStatus(){
       playerMaxEl.textContent = maxNum || '—';
       playerBarFill.style.width = (maxNum > 0 ? (onNum / maxNum * 100) : 0) + '%';
 
-      const ver = data.version || '';
+      const ver = cleanMcText(data.version || '');
       if (ver) {
         serverVersionEl.textContent = ver;
         footerVersionEl.textContent = ver.toUpperCase();
@@ -875,7 +925,11 @@ const resSrcEl = document.getElementById('resSrc');
 const resStateEl = document.getElementById('resState');
 const resCpuEl = document.getElementById('resCpu');
 const resMemEl = document.getElementById('resMem');
-const resDiskEl = document.getElementById('resDisk');
+const resSpecEl = document.getElementById('resSpec');
+
+// 给监控趋势迷你折线用：CPU 原始值 / 核数 = 百分比，内存原始字节 / 总字节 = 百分比
+let coreCount = null;
+let memTotalBytes = null;
 
 const RES_STATE_TEXT = {
   running: '运行中', stopped: '已停止', starting: '启动中', stopping: '停止中',
@@ -884,7 +938,13 @@ const RES_STATE_TEXT = {
 
 function setResDash(){
   resStateEl.textContent = '—'; resCpuEl.textContent = '—';
-  resMemEl.textContent = '—'; resDiskEl.textContent = '—';
+  resMemEl.textContent = '—'; resSpecEl.textContent = '—';
+}
+
+// 实时用量（百分比）格式化，0 也要正常显示
+function fmtPct(v){
+  const n = Number(v);
+  return (v === 0 || v) && !isNaN(n) ? n.toFixed(1) : '—';
 }
 
 async function fetchRainyunStatus(){
@@ -894,15 +954,31 @@ async function fetchRainyunStatus(){
     if (!res.ok) throw new Error('http ' + res.status);
     const payload = await res.json();
     const d = payload && (payload.data || payload);
-    if (!d) throw new Error('bad payload');
+    if (!d || d.ok === false) throw new Error('bad payload');
 
+    // 记录规格供监控迷你折线换算百分比
+    coreCount = Number(d.cpu) || null;
+    memTotalBytes = d.memory != null ? Number(d.memory) * 1024 * 1024 * 1024 : null;
+
+    // 实例运行状态
     const stateRaw = String(d.status || '').toLowerCase();
     resStateEl.textContent = RES_STATE_TEXT[stateRaw] || d.status || '未知';
-    resCpuEl.textContent = (d.cpu === 0 || d.cpu) ? d.cpu : '—';
-    resMemEl.textContent = (d.memory === 0 || d.memory) ? d.memory : '—';
-    resDiskEl.textContent = (d.base_disk === 0 || d.base_disk) ? d.base_disk : '—';
 
-    const ts = d.usage && d.usage.update_time;
+    // 实时用量：usage.cpu / usage.mem 均为百分比
+    const usage = d.usage || {};
+    resCpuEl.textContent = fmtPct(usage.cpu);
+    resMemEl.textContent = fmtPct(usage.mem);
+
+    // 固定规格放小字
+    const specs = [];
+    if (d.cpu != null) specs.push(d.cpu + ' 核');
+    if (d.memory != null) specs.push(d.memory + ' GB 内存');
+    if (d.base_disk != null) specs.push(d.base_disk + ' GB 磁盘');
+    if (d.egg_title) specs.push(d.egg_title);
+    resSpecEl.textContent = specs.length ? specs.join(' · ') : '—';
+
+    // 数据同步时间
+    const ts = usage.update_time;
     if (ts) {
       const dt = new Date(Number(ts) * 1000);
       if (!isNaN(dt)) resSrcEl.textContent = '更新于 ' + dt.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
@@ -914,7 +990,119 @@ async function fetchRainyunStatus(){
   }
 }
 fetchRainyunStatus();
-setInterval(fetchRainyunStatus, 60000);
+setInterval(fetchRainyunStatus, 60000);  // 每 60 秒刷新一次实时用量
+
+/* ============ 监控趋势 · 无轴迷你折线（Sparkline） ============ */
+const sparkCpu  = document.getElementById('sparkCpu');
+const sparkMem  = document.getElementById('sparkMem');
+const sparkNet  = document.getElementById('sparkNet');
+const valCpu    = document.getElementById('valCpu');
+const valMem    = document.getElementById('valMem');
+const valNet    = document.getElementById('valNet');
+const resTrend  = document.getElementById('resTrend');
+
+const SPARK_W = 200, SPARK_H = 24;
+
+// 生成无轴折线的 SVG path d 值。每条线在自身 min/max 范围内归一，
+// 只表现趋势形状，不表达绝对刻度——这就是 sparkline 的本意。
+function buildSparkPath(values, width, height, pad) {
+  pad = pad || 2;
+  const w = width - pad * 2;
+  const h = height - pad * 2;
+  const valid = values.filter(v => v != null && !isNaN(v));
+  if (valid.length < 2) return '';
+  const min = Math.min.apply(null, valid);
+  const max = Math.max.apply(null, valid);
+  const range = max - min || 1;
+  const stepX = w / (values.length - 1);
+  let d = '';
+  let started = false;
+  for (let i = 0; i < values.length; i++) {
+    const v = values[i];
+    if (v == null || isNaN(v)) { started = false; continue; }
+    const x = pad + i * stepX;
+    const y = pad + h - ((v - min) / range) * h;
+    d += (started ? ' L ' : 'M ') + x.toFixed(2) + ' ' + y.toFixed(2);
+    started = true;
+  }
+  return d;
+}
+
+function renderSpark(svg, values, color) {
+  const path = buildSparkPath(values, SPARK_W, SPARK_H, 2);
+  svg.setAttribute('viewBox', '0 0 ' + SPARK_W + ' ' + SPARK_H);
+  svg.setAttribute('preserveAspectRatio', 'none');
+  const stroke = color || 'var(--accent)';
+  svg.innerHTML = '<path d="' + path + '" fill="none" stroke="' + stroke +
+    '" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>';
+}
+
+function lastValid(arr) {
+  for (let i = arr.length - 1; i >= 0; i--) {
+    if (arr[i] != null && !isNaN(arr[i])) return arr[i];
+  }
+  return null;
+}
+
+function fmtRate(bytes) {
+  if (bytes >= 1048576) return (bytes / 1048576).toFixed(2) + '<span class="tu">MB/s</span>';
+  if (bytes >= 1024) return (bytes / 1024).toFixed(1) + '<span class="tu">KB/s</span>';
+  return bytes.toFixed(0) + '<span class="tu">B/s</span>';
+}
+
+async function fetchMonitor() {
+  try {
+    const res = await fetch('/api/monitor', { cache: 'no-store' });
+    if (!res.ok) throw new Error('http ' + res.status);
+    const payload = await res.json();
+    const s = payload && payload.series;
+    if (!s) throw new Error('no series');
+
+    const cpuRaw = s.cpu   || [];
+    const memRaw = s.mem   || [];
+    const netin  = s.netin || [];
+    const netout = s.netout || [];
+
+    // CPU 原始值 / 核数 = 百分比；拿不到核数就退化为原值（仍能看趋势）
+    const cpuPct = cpuRaw.map(v => {
+      if (v == null) return null;
+      const n = Number(v);
+      return coreCount ? (n / coreCount) : n;
+    });
+
+    // 内存字节 / 总字节 = 百分比
+    const memPct = memRaw.map(v => {
+      if (v == null) return null;
+      const n = Number(v);
+      return memTotalBytes ? (n / memTotalBytes * 100) : n;
+    });
+
+    // 网络入+出 合计
+    const netTotal = netin.map((v, i) => {
+      const inn = v == null ? 0 : Number(v);
+      const out = netout[i] == null ? 0 : Number(netout[i]);
+      return inn + out;
+    });
+
+    renderSpark(sparkCpu, cpuPct, 'var(--accent)');
+    renderSpark(sparkMem, memPct, 'var(--accent)');
+    renderSpark(sparkNet, netTotal, 'var(--accent)');
+
+    const lastCpu = lastValid(cpuPct);
+    const lastMem = lastValid(memPct);
+    const lastNet = lastValid(netTotal);
+
+    if (lastCpu != null) valCpu.innerHTML = lastCpu.toFixed(0) + '<span class="tu">%</span>';
+    if (lastMem != null) valMem.innerHTML = lastMem.toFixed(0) + '<span class="tu">%</span>';
+    if (lastNet != null) valNet.innerHTML = fmtRate(lastNet);
+
+    resTrend.style.display = '';
+  } catch (err) {
+    // 拉取失败就保持隐藏，不打扰主界面
+  }
+}
+fetchMonitor();
+setInterval(fetchMonitor, 60000);
 
 /* ============ CREDIT GUARD ============ */
 (function creditGuard(){
@@ -992,6 +1180,5 @@ setInterval(fetchRainyunStatus, 60000);
 })();
 </script>
 
-
-
-</body></html>
+</body>
+</html>
