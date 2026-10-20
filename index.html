@@ -279,16 +279,15 @@
   .player-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-soft));width:0;transition:width 800ms cubic-bezier(.22,1,.36,1);border-radius:2px}
   .res-head{display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-bottom:.9rem;padding-top:1.5rem;border-top:1px solid var(--line-soft);font-family:'Inter',sans-serif;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-soft)}
   .res-head .res-src{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.04em;text-transform:none;color:var(--text-mute)}
-  .res-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;margin-bottom:.6rem}
-  @media (max-width:480px){.res-grid{grid-template-columns:1fr 1fr}}
+  .res-rows{display:flex;flex-direction:column;margin-bottom:1.1rem}
+  .res-row{padding:.85rem 0;border-bottom:1px solid var(--line-soft)}
+  .res-row:last-child{border-bottom:none}
+  .rr-top{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;margin-bottom:.5rem}
+  .rr-label{font-family:'Inter',sans-serif;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-mute)}
+  .rr-value{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:500;color:var(--text);letter-spacing:-.02em}
+  .rr-value .unit{font-size:11px;color:var(--text-mute);margin-left:2px;font-weight:400}
+  .spark{width:100%;height:26px;display:block;overflow:visible}
   .res-note{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-mute);margin-bottom:1.5rem;letter-spacing:.02em;line-height:1.6}
-  .res-trend{margin:0 0 1.5rem;padding:1rem 0 0;border-top:1px solid var(--line-soft)}
-  .res-trend-title{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-mute);margin-bottom:.85rem}
-  .trend-row{display:grid;grid-template-columns:46px 1fr auto;align-items:center;gap:.6rem;padding:.3rem 0}
-  .trend-label{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-soft);letter-spacing:.05em}
-  .spark{width:100%;height:24px;display:block;overflow:visible}
-  .trend-val{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);text-align:right;min-width:56px;white-space:nowrap}
-  .trend-val .tu{font-size:10px;color:var(--text-mute);margin-left:2px}
   .ip-block{background:var(--bg-elev);border:1px solid var(--line);border-radius:14px;padding:.85rem 1rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
   .ip-block .ip-label{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-mute);margin-bottom:2px}
   .ip-block .ip-value{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;color:var(--text);word-break:break-all}
@@ -493,46 +492,43 @@
     <div class="section-head reveal">
       <span class="eyebrow">STEP 01 · OUR SERVER</span>
       <h2>我们的服务器</h2>
-      <p>先看看这台服务器现在跑得怎么样——实例状态、CPU、内存占用，以及近一小时的实时监控趋势，全部来自雨云实例。</p>
+      <p>先看看这台服务器现在跑得怎么样——实例状态、CPU、内存占用与网络的实时数据，下方各附一条近一小时的走势曲线，全部来自雨云实例。</p>
     </div>
     <div class="status-card reveal" style="max-width:720px;">
       <div class="res-head" style="border-top:none;padding-top:0">
         <span>服务器资源 · 雨云实例</span>
         <span class="res-src" id="resSrc">等待同步</span>
       </div>
-      <div class="res-grid">
-        <div class="stat-block">
-          <div class="label">实例状态</div>
-          <div class="value" id="resState" style="font-size:15px;line-height:1.3;">—</div>
+      <div class="res-rows">
+        <div class="res-row">
+          <div class="rr-top">
+            <span class="rr-label">实例状态</span>
+            <span class="rr-value" id="resState" style="font-size:17px;">—</span>
+          </div>
         </div>
-        <div class="stat-block">
-          <div class="label">CPU 使用率</div>
-          <div class="value"><span id="resCpu">—</span><span class="unit">%</span></div>
+        <div class="res-row">
+          <div class="rr-top">
+            <span class="rr-label">CPU 使用率</span>
+            <span class="rr-value"><span id="resCpu">—</span><span class="unit">%</span></span>
+          </div>
+          <svg class="spark" id="sparkCpu"></svg>
         </div>
-        <div class="stat-block">
-          <div class="label">内存占用</div>
-          <div class="value"><span id="resMem">—</span><span class="unit">%</span></div>
+        <div class="res-row">
+          <div class="rr-top">
+            <span class="rr-label">内存占用</span>
+            <span class="rr-value"><span id="resMem">—</span><span class="unit">%</span></span>
+          </div>
+          <svg class="spark" id="sparkMem"></svg>
+        </div>
+        <div class="res-row">
+          <div class="rr-top">
+            <span class="rr-label">网络</span>
+            <span class="rr-value" id="resNet">—</span>
+          </div>
+          <svg class="spark" id="sparkNet"></svg>
         </div>
       </div>
       <div class="res-note" id="resSpec">—</div>
-      <div class="res-trend" id="resTrend" style="display:none">
-        <div class="res-trend-title">监控趋势 · 近 1 小时</div>
-        <div class="trend-row">
-          <span class="trend-label">CPU</span>
-          <svg class="spark" id="sparkCpu"></svg>
-          <span class="trend-val" id="valCpu">—</span>
-        </div>
-        <div class="trend-row">
-          <span class="trend-label">内存</span>
-          <svg class="spark" id="sparkMem"></svg>
-          <span class="trend-val" id="valMem">—</span>
-        </div>
-        <div class="trend-row">
-          <span class="trend-label">网络</span>
-          <svg class="spark" id="sparkNet"></svg>
-          <span class="trend-val" id="valNet">—</span>
-        </div>
-      </div>
     </div>
   </div>
 </section>
@@ -702,7 +698,7 @@ themeToggle.addEventListener('click', () => {
 });
 
 /* PARTICLES */
-if (!prefersReducedMotion) {
+if (!prefersReducedMotion) try {
   const canvas = document.getElementById('bg-canvas');
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -759,7 +755,7 @@ if (!prefersReducedMotion) {
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
   });
-}
+} catch(e) { /* WebGL 不可用时跳过粒子背景，不影响状态与曲线渲染 */ }
 
 /* HERO INTRO — 六拍编排，新增 tagline */
 const heroEls = [
@@ -996,10 +992,7 @@ setInterval(fetchRainyunStatus, 60000);  // 每 60 秒刷新一次实时用量
 const sparkCpu  = document.getElementById('sparkCpu');
 const sparkMem  = document.getElementById('sparkMem');
 const sparkNet  = document.getElementById('sparkNet');
-const valCpu    = document.getElementById('valCpu');
-const valMem    = document.getElementById('valMem');
-const valNet    = document.getElementById('valNet');
-const resTrend  = document.getElementById('resTrend');
+const resNet    = document.getElementById('resNet');
 
 const SPARK_W = 200, SPARK_H = 24;
 
@@ -1088,15 +1081,9 @@ async function fetchMonitor() {
     renderSpark(sparkMem, memPct, 'var(--accent)');
     renderSpark(sparkNet, netTotal, 'var(--accent)');
 
-    const lastCpu = lastValid(cpuPct);
-    const lastMem = lastValid(memPct);
+    // 网络行右侧显示当前速率（CPU/内存的数值由 /api/status 提供）
     const lastNet = lastValid(netTotal);
-
-    if (lastCpu != null) valCpu.innerHTML = lastCpu.toFixed(0) + '<span class="tu">%</span>';
-    if (lastMem != null) valMem.innerHTML = lastMem.toFixed(0) + '<span class="tu">%</span>';
-    if (lastNet != null) valNet.innerHTML = fmtRate(lastNet);
-
-    resTrend.style.display = '';
+    if (lastNet != null) resNet.innerHTML = fmtRate(lastNet);
   } catch (err) {
     // 拉取失败就保持隐藏，不打扰主界面
   }
