@@ -286,7 +286,7 @@
   .rr-label{font-family:'Inter',sans-serif;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-mute)}
   .rr-value{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:500;color:var(--text);letter-spacing:-.02em}
   .rr-value .unit{font-size:11px;color:var(--text-mute);margin-left:2px;font-weight:400}
-  .spark{width:100%;height:26px;display:block;overflow:visible}
+  .spark{width:100%;height:38px;display:block;overflow:visible}
   .res-note{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-mute);margin-bottom:1.5rem;letter-spacing:.02em;line-height:1.6}
   .ip-block{background:var(--bg-elev);border:1px solid var(--line);border-radius:14px;padding:.85rem 1rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
   .ip-block .ip-label{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-mute);margin-bottom:2px}
@@ -994,35 +994,61 @@ const sparkMem  = document.getElementById('sparkMem');
 const sparkNet  = document.getElementById('sparkNet');
 const resNet    = document.getElementById('resNet');
 
-const SPARK_W = 200, SPARK_H = 24;
+const SPARK_W = 200, SPARK_H = 36;
 
-// 生成无轴折线的 SVG path d 值。每条线在自身 min/max 范围内归一，
-// 只表现趋势形状，不表达绝对刻度——这就是 sparkline 的本意。
+// Catmull-Rom 样条转三次贝塞尔控制点，让折线变平滑
+function crToBezier(p0, p1, p2, p3, t) {
+  t = t == null ? 0.5 : t;
+  return {
+    x1: p1.x + (p2.x - p0.x) * t / 6,
+    y1: p1.y + (p2.y - p0.y) * t / 6,
+    x2: p2.x - (p3.x - p1.x) * t / 6,
+    y2: p2.y - (p3.y - p1.y) * t / 6,
+  };
+}
+
+// 生成无轴迷你折线。关键：不把数据拉满整个高度，
+// 而是固定一条靠近底部的基线，只在小幅范围内起伏——像心跳线。
 function buildSparkPath(values, width, height, pad) {
-  pad = pad || 2;
+  pad = pad || 3;
   const w = width - pad * 2;
-  const h = height - pad * 2;
   const valid = values.filter(v => v != null && !isNaN(v));
   if (valid.length < 2) return '';
   const min = Math.min.apply(null, valid);
   const max = Math.max.apply(null, valid);
   const range = max - min || 1;
+
+  // 基线贴近底部，波动幅度限制在高度的 35% 以内，避免噪声被放大成大锯齿
+  const baseline = height - pad - 2;
+  const amplitude = height * 0.35;
+
+  const pts = [];
   const stepX = w / (values.length - 1);
-  let d = '';
-  let started = false;
   for (let i = 0; i < values.length; i++) {
     const v = values[i];
-    if (v == null || isNaN(v)) { started = false; continue; }
+    if (v == null || isNaN(v)) continue;
     const x = pad + i * stepX;
-    const y = pad + h - ((v - min) / range) * h;
-    d += (started ? ' L ' : 'M ') + x.toFixed(2) + ' ' + y.toFixed(2);
-    started = true;
+    const y = baseline - ((v - min) / range) * amplitude;
+    pts.push({ x, y });
+  }
+  if (pts.length < 2) return '';
+
+  let d = 'M ' + pts[0].x.toFixed(2) + ' ' + pts[0].y.toFixed(2);
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[i - 1] || pts[i];
+    const p1 = pts[i];
+    const p2 = pts[i + 1];
+    const p3 = pts[i + 2] || p2;
+    const c = crToBezier(p0, p1, p2, p3, 0.5);
+    d += ' C ' + c.x1.toFixed(2) + ' ' + c.y1.toFixed(2)
+      + ', ' + c.x2.toFixed(2) + ' ' + c.y2.toFixed(2)
+      + ', ' + p2.x.toFixed(2) + ' ' + p2.y.toFixed(2);
   }
   return d;
 }
 
 function renderSpark(svg, values, color) {
-  const path = buildSparkPath(values, SPARK_W, SPARK_H, 2);
+  const path = buildSparkPath(values, SPARK_W, SPARK_H, 3);
   svg.setAttribute('viewBox', '0 0 ' + SPARK_W + ' ' + SPARK_H);
   svg.setAttribute('preserveAspectRatio', 'none');
   const stroke = color || 'var(--accent)';
