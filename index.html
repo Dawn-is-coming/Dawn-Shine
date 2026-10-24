@@ -27,7 +27,7 @@
   html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
   body{background:var(--bg);color:var(--text);font-family:'Inter','Noto Serif SC',sans-serif;font-size:16px;line-height:1.7;overflow-x:hidden;transition:background 600ms cubic-bezier(.22,1,.36,1),color 600ms cubic-bezier(.22,1,.36,1)}
   body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 20% 0%,var(--accent-glow),transparent 60%),radial-gradient(ellipse 60% 40% at 80% 100%,rgba(217,119,87,0.18),transparent 60%);pointer-events:none;z-index:0;opacity:.7;transition:opacity 600ms ease}
-  #bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+  #bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;transform:translateZ(0);will-change:transform}
   .serif{font-family:'Noto Serif SC',serif}
   .mono{font-family:'JetBrains Mono',monospace}
   .eyebrow{font-family:'Inter',sans-serif;font-size:11px;font-weight:500;letter-spacing:.32em;text-transform:uppercase;color:var(--accent);display:inline-flex;align-items:center;gap:.75rem}
@@ -700,13 +700,23 @@ themeToggle.addEventListener('click', () => {
 /* PARTICLES */
 if (!prefersReducedMotion) try {
   const canvas = document.getElementById('bg-canvas');
-  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  // preserveDrawingBuffer：浏览器重新合成图层时会丢弃未保留的 WebGL 画布内容，
+  // 表现就是整层圆点突然集体消失再出现（闪烁）。打开后画布始终保留上一帧。
+  const renderer = new THREE.WebGLRenderer({
+    canvas, alpha: true,
+    antialias: !isCoarse,          // 手机显卡上 MSAA 代价高，关掉
+    preserveDrawingBuffer: true,
+    powerPreference: 'high-performance',
+    depth: false,
+    stencil: false
+  });
+  const MAX_DPR = isCoarse ? 1.5 : 2;   // 移动端降低渲染分辨率，减少显存压力
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, MAX_DPR));
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
   camera.position.z = 8;
-  const COUNT = isCoarse ? 600 : 1200;
+  const COUNT = isCoarse ? 400 : 1200;
   const positions = new Float32Array(COUNT*3), sizes = new Float32Array(COUNT), offsets = new Float32Array(COUNT);
   for (let i=0;i<COUNT;i++){
     positions[i*3]=(Math.random()-0.5)*22; positions[i*3+1]=(Math.random()-0.5)*16; positions[i*3+2]=(Math.random()-0.5)*14;
@@ -723,7 +733,7 @@ if (!prefersReducedMotion) try {
       vec4 mv=modelViewMatrix*vec4(p,1.0);gl_PointSize=aSize*(180.0/-mv.z);gl_Position=projectionMatrix*mv;
       vAlpha=0.45+0.55*sin(uTime*0.6+aOffset);}`,
     fragmentShader:`varying float vAlpha;uniform vec3 uColor;void main(){vec2 uv=gl_PointCoord-vec2(0.5);
-      float d=length(uv);if(d>0.5)discard;float a=smoothstep(0.5,0.0,d)*vAlpha;gl_FragColor=vec4(uColor,a*0.55);}`,
+      float d=length(uv);if(d>0.5)discard;float a=smoothstep(0.5,0.0,d)*max(vAlpha,0.0);gl_FragColor=vec4(uColor,a*0.55);}`,
     transparent:true, depthWrite:false, blending:THREE.AdditiveBlending
   });
   const points = new THREE.Points(geo, mat);
@@ -733,6 +743,8 @@ if (!prefersReducedMotion) try {
     mouseX=(e.clientX/window.innerWidth-0.5)*2; mouseY=(e.clientY/window.innerHeight-0.5)*2;
   });
   const clock = new THREE.Clock();
+  const COLOR_DARK = new THREE.Color(0xe8a87c);
+  const COLOR_LIGHT = new THREE.Color(0xc9612a);
   let visible = true;
   new IntersectionObserver(es=>{visible=es[0].isIntersecting;}).observe(canvas);
   function animate(){
@@ -745,14 +757,14 @@ if (!prefersReducedMotion) try {
     points.rotation.y = targetRotY + t*0.02;
     points.rotation.x = targetRotX;
     const theme = root.getAttribute('data-theme');
-    const tc = theme==='dark' ? new THREE.Color(0xe8a87c) : new THREE.Color(0xc9612a);
-    mat.uniforms.uColor.value.lerp(tc, 0.05);
+    mat.uniforms.uColor.value.lerp(theme==='dark' ? COLOR_DARK : COLOR_LIGHT, 0.05);
     renderer.render(scene, camera);
   }
   animate();
   window.addEventListener('resize', ()=>{
     camera.aspect = window.innerWidth/window.innerHeight;
     camera.updateProjectionMatrix();
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, MAX_DPR));
     renderer.setSize(window.innerWidth, window.innerHeight);
   });
 } catch(e) { /* WebGL 不可用时跳过粒子背景，不影响状态与曲线渲染 */ }
